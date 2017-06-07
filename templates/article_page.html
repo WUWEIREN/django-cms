@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block center %}
+<!-- Center Column -->
+<div class="col-sm-6">
+    <!--Article-->
+    <div class="row">
+        <article class="col-xs-12">
+            <h2>{{ article.title }}</h2>
+            <p class="pull-right"><span class="label label-default">{{ article.column }}</span> </p>
+            <p><hr></p>
+            <p>{{ content | safe }}</p>
+            <p></p>
+            <ul class="list-inline">
+                <li><a href=""><span class="glyphicon glyphicon-comment"></span> {{ commentNum }}Comments</a> </li>
+                <li><a href="/focus/{{ article.id }}/keep/"><span class="glyphicon glyphicon-star-empty"></span> </a>{{ article.keep_num }}Favorites </li>
+                <li><a href="/focus/{{ article.id }}/poll/"><span class="glyphicon glyphicon-thumbs-up"></span>{{ article.poll_num }}Upvotes </a> </li>
+            </ul>
+        </article>
+    </div>
+    <hr>
+
+    <!--comments-->
+    <h3>Comments:</h3>
+    <hr>
+    {% for comment in comments %}
+    <div class="row">
+        <article class="col-xs-12">
+            <p class="pull-right"><span class="label label-default">tag</span><span class="label label-default">{{ comment.user }}</span> </p>
+            <p>{{ comment.content }}</p>
+            <ul class="list-inline">
+
+                <li><a href="">{{ comment.pub_date | date:"j M" }}</a> </li>
+                <li><a href=""><span class="glyphicon glyphicon-comment"></span>&nbsp;{{ article.comment_num }}&nbsp;Comments </a> </li>
+                <li><a href=""><span class="glyphicon glyphicon-thumbs-up"></span>&nbsp;{{ comment.poll_num }}&nbsp;Upvotes</a> </li>
+
+            </ul>
+        </article>
+    </div>
+    <hr>
+    {% endfor %}
+    <div class="row">
+        <article class="col-xs-12">
+            <h4>Sharing you comment:</h4>
+            <form action="/focus/{{ article.id }}/comment/" method="post">
+                {% csrf_token %}
+                {{ commentform.as_p }}
+                <input class="btn btn-default" type="submit" value="Submit">
+            </form>
+        </article>
+    </div>
+    <hr>
+</div>
+<!--Center Column-->
+{% endblock %}
+
+{% block state %}
+    {% if request.user.is_authenticated %}
+			<!-- Form -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<span class="glyphicon glyphicon-user"></span>
+						Logged In
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">hi:{{ user }} <a href="/focus/logout/"><input class="btn btn-default" type="submit" value="Logout" /></a></div>
+				</div>
+			</div>
+    {% else %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <a href="{% url 'register' %}"><span class="glyphicon glyphicon-log-in"></span>
+                Want Register?</a>
+            </h3>
+            </h3>
+        </div>
+        <div class="panel-body">
+            <form action="/focus/login/" method="post">
+                {% csrf_token %}
+                {{ loginform.non_field_errors }}
+                <div class="form-group">
+                    {{ loginform.uid }}
+{#						<!--	<input type="text" class="form-control" id="uid" name="uid" placeholder="Username">  -->#}
+                </div>
+                <div class="form-group">
+                    {{ loginform.pwd }}
+{#						<!--	<input type="password" class="form-control" id="pwd" name="pwd" placeholder="Password">  -->#}
+                </div>
+
+                <button type="submit" class="btn btn-default">Log In</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
